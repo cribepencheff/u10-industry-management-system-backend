@@ -1,0 +1,16 @@
+# Node modules (don't commit installed packages)
+node_modules/
+
+# Environment variables (secrets like DB URI, API keys, etc.)
+.env
+
+# Log files
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS-specific files
+.DS_Store       # macOS
+Thumbs.db       # Windows
