@@ -12,14 +12,46 @@ export const getProducts = async (req, res) => {
         select: "name",
         populate: {
           path: "contact",
-          select: "email"
+          select: "name email"
         }
       }).lean();
+
+    if (!products.length) {
+      return res.status(404).json({ error: "No products found" });
+    }
 
     return res.status(200).json(products);
   } catch (err) {
     console.error("[products/]", error);
     return res.status(500).json({ error: "Error fetching products" });
+  }
+};
+
+// Get a single product by ID
+export const getProduct = async (req, res) => {
+  if (!mongoose.isValidObjectId(req.params.id)) {
+    return res.status(400).json({ error: "ID must be valid ObjectID" });
+  }
+
+  try {
+    const product = await ProductModel.findById(req.params.id)
+      .populate({
+        path: "manufacturer",
+        select: "name",
+        populate: {
+          path: "contact",
+          select: "name email"
+        }
+      }).lean();
+
+    if (!product) {
+      return res.status(404).json({ error: "Product not found" });
+    }
+
+    res.status(200).json(product);
+  } catch (err) {
+    console.error(`[products/${req.params.id}]`, err);
+    res.status(500).json({ error: err.message });
   }
 };
 
@@ -33,18 +65,6 @@ export const createProducts = async (req, res) => {
   }
 };
 
-// Get a single product by ID
-export const getProduct = async (req, res) => {
-  if (!mongoose.isValidObjectId(req.params.id)) {
-    return res.status(400).json({ error: "ID must be valid ObjectID" });
-  }
-  try {
-    const products = await ProductModel.findById(req.params.id);
-    res.json(products);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
 
 // Update a product
 export const updateProduct = async (req, res) => {
