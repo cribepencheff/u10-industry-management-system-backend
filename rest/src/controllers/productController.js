@@ -1,21 +1,33 @@
-import { ProductModel } from "../models/Product.js";
 import mongoose from "mongoose";
+import { ProductModel } from "../models/Product.js";
+import { ManufacturerModel } from "../models/Manufacturer.js";
+import { ContactModel } from "../models/Contact.js";
+
+// Get all users
+export const getProducts = async (req, res) => {
+  try {
+    const products = await ProductModel.find()
+      .populate({
+        path: "manufacturer",
+        select: "name",
+        populate: {
+          path: "contact",
+          select: "email"
+        }
+      }).lean();
+
+    return res.status(200).json(products);
+  } catch (err) {
+    console.error("[products/]", error);
+    return res.status(500).json({ error: "Error fetching products" });
+  }
+};
 
 // Create a new user
 export const createProducts = async (req, res) => {
   try {
     const newProduct = await ProductModel.create(req.body);
     res.status(201).json(newProduct);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
-
-// Get all users
-export const getProducts = async (req, res) => {
-  try {
-    const products = await ProductModel.find();
-    res.json(products);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

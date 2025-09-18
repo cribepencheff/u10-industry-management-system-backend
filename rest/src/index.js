@@ -13,7 +13,7 @@ const app = express();
 app.use(express.json());
 
 // Routes
-app.use("/api/product", productRoutes);
+app.use("/api/products", productRoutes);
 
 connectDB()
   .then(() => {
