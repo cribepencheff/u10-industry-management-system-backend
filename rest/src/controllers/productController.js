@@ -3,6 +3,45 @@ import { ProductModel } from "../models/Product.js";
 import { ManufacturerModel } from "../models/Manufacturer.js";
 import { ContactModel } from "../models/Contact.js";
 
+// Create a new Product
+export const createProduct = async (req, res) => {
+  const { name, sku, description, price, category, manufacturer,  amountInStock } = req.body;
+
+  if (!name || !sku || !description || !price || !category || !manufacturer || !amountInStock) {
+    return res.status(400).json({ error: `All fields are required ${Object.values( req.body ).join(", ")}` });
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(manufacturer)) {
+    return res.status(400).json({ error: "Manufacturer ID must be a valid ObjectID" });
+  }
+
+  try {
+    const existingManufacturer = await ManufacturerModel.findById(manufacturer);
+    if (!existingManufacturer) {
+      return res.status(400).json({ error: "Manufacturer does not exist" });
+    }
+
+    const existingProduct = await ProductModel.findOne({ sku });
+    if (existingProduct) {
+      return res.status(409).json({ error: `A product with SKU ${sku} already exists.` });
+    }
+
+    const newProduct = await ProductModel.create({
+      name,
+      sku,
+      description,
+      price,
+      category,
+      manufacturer,
+      amountInStock
+    });
+    return res.status(201).json(newProduct);
+  } catch (error) {
+    console.error("[products/]", error);
+    res.status(500).json({ error: "Error creating product" });
+  }
+};
+
 // Get all users
 export const getProducts = async (req, res) => {
   try {
@@ -54,17 +93,6 @@ export const getProduct = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
-
-// Create a new user
-export const createProducts = async (req, res) => {
-  try {
-    const newProduct = await ProductModel.create(req.body);
-    res.status(201).json(newProduct);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
-
 
 // Update a product
 export const updateProduct = async (req, res) => {
