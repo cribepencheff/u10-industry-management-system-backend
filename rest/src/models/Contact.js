@@ -1,6 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 
-const ContactSchema = new mongoose.Schema(
+const ContactSchema = new Schema (
   {
     name: {
       type: String,
@@ -11,11 +11,7 @@ const ContactSchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
-    // TODO: Should number be required?
-    phone: {
-      type: String,
-      required: true,
-    },
+    phone: { type: String },
   },
   { timestamps: true }
 );
