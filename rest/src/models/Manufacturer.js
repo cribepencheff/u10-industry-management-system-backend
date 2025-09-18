@@ -25,7 +25,8 @@ const ManufacturerSchema = new mongoose.Schema(
       unique: true,
     },
     contact: {
-      type: String,
+      type: Schema.Types.ObjectId, ref: "Contact",
+      default: null,
       required: true,
     },
   },
