@@ -5,14 +5,18 @@ import {
   getProduct,
   updateProduct,
   deleteProduct,
+  getTotalValueOfAllProducts,
 } from "../controllers/productController.js";
 
 const router = express.Router();
+
+router.get("/total-stock-value", getTotalValueOfAllProducts);
 
 router.post("/", createProduct);
 router.get("/", getProducts);
 router.get("/:id", getProduct);
 router.put("/:id", updateProduct);
 router.delete("/:id", deleteProduct);
+
 
 export default router;

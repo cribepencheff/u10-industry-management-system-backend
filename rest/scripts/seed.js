@@ -58,10 +58,10 @@ async function seedDatabase() {
     name: faker.commerce.productName(),
     sku: faker.string.alphanumeric(8).toUpperCase(),
     description: faker.commerce.productDescription(),
-    price: faker.commerce.price(),
+    price: Number(faker.commerce.price()),
     category: rand(["Electronics", "Furniture", "Clothing", "Food"]),
     manufacturer: rand(manufacturerDocs)._id,
-    amountInStock: faker.string.numeric({ length: 2 }),
+    amountInStock: Number(faker.string.numeric({ length: 2 })),
   }));
   await ProductModel.insertMany(products, { ordered: false });
 

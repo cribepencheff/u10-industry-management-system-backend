@@ -16,7 +16,7 @@ const ProductSchema = new Schema (
       required: true,
     },
     price: {
-      type: String,
+      type: Number,
       required: true,
     },
     category: {
@@ -29,7 +29,7 @@ const ProductSchema = new Schema (
       required: true,
     },
     amountInStock: {
-      type: String,
+      type: Number,
       required: true,
     },
   },

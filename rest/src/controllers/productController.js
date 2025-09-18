@@ -149,3 +149,29 @@ export const deleteProduct = async (req, res) => {
     return res.status(500).json({ error: "Failed to delete product" } );
   }
 };
+
+// Total value of all products in stock
+
+export const getTotalValueOfAllProducts = async (req, res) => {
+  try {
+    const result = await ProductModel.aggregate([
+      {
+        $group: {
+          _id: null,
+          totalValue: {
+            $sum: { $multiply: ["$price", "$amountInStock"] }
+          }
+        }
+      }
+    ]);
+
+    if (result.length === 0) {
+      return res.status(200).json({ totalValue: 0 });
+    }
+
+    res.status(200).json({ totalValue: Number(result[0]?.totalValue.toFixed(2)) });
+
+  } catch (error) {
+    res.status(500).json({ error: "Error calculating total value of products" });
+  }
+};
