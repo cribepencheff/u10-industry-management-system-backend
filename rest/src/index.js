@@ -1,17 +1,27 @@
-require("dotenv").config();
-const express = require("express");
-const connectDB = require("./config/db");
-const productRoutes = require("./routes/productRoutes");
+import express from "express";
+import dotenv from "dotenv";
+import { connectDB } from "./config/db.js";
+import { success, error } from "./utils/colors.js";
 
-const app = express();
+dotenv.config();
+import productRoutes from "./routes/productRoutes.js";
+
 const PORT = process.env.PORT || 3000;
+const app = express();
 
-connectDB();
-
+// Middleware
 app.use(express.json());
 
+// Routes
 app.use("/api/product", productRoutes);
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+connectDB()
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log(success("✓"), `REST API is running on port ${PORT}`);
+    });
+  })
+  .catch((err) => {
+    console.error(error("✓"), "DB connection error:", err.message);
+    process.exit(1);
+  });

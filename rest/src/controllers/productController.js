@@ -1,8 +1,8 @@
-const ProductModel = require("../models/Product");
-const mongoose = require("mongoose");
+import { ProductModel } from "../models/Product.js";
+import mongoose from "mongoose";
 
 // Create a new user
-const createProducts = async (req, res) => {
+export const createProducts = async (req, res) => {
   try {
     const newProduct = await ProductModel.create(req.body);
     res.status(201).json(newProduct);
@@ -12,7 +12,7 @@ const createProducts = async (req, res) => {
 };
 
 // Get all users
-const getProducts = async (req, res) => {
+export const getProducts = async (req, res) => {
   try {
     const products = await ProductModel.find();
     res.json(products);
@@ -21,7 +21,8 @@ const getProducts = async (req, res) => {
   }
 };
 
-const getProduct = async (req, res) => {
+// Get a single product by ID
+export const getProduct = async (req, res) => {
   if (!mongoose.isValidObjectId(req.params.id)) {
     return res.status(400).json({ error: "ID must be valid ObjectID" });
   }
@@ -33,7 +34,8 @@ const getProduct = async (req, res) => {
   }
 };
 
-const updateProduct = async (req, res) => {
+// Update a product
+export const updateProduct = async (req, res) => {
   if (!mongoose.isValidObjectId(req.params.id)) {
     return res.status(400).json({ error: "ID must be valid ObjectID" });
   }
@@ -52,7 +54,8 @@ const updateProduct = async (req, res) => {
   }
 };
 
-const deleteProduct = async (req, res) => {
+// Delete a product
+export const deleteProduct = async (req, res) => {
   if (!mongoose.isValidObjectId(req.params.id)) {
     return res.status(400).json({ error: "ID must be valid ObjectID" });
   }
@@ -62,12 +65,4 @@ const deleteProduct = async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
-};
-
-module.exports = {
-  createProducts,
-  getProducts,
-  getProduct,
-  updateProduct,
-  deleteProduct,
 };
