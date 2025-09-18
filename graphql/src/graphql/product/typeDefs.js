@@ -1,4 +1,6 @@
-const typeDefs = gql`
+import { gql } from "apollo-server-express";
+
+export const typeDefs = gql`
   type Product {
     id: ID!
     name: String!
@@ -27,5 +29,3 @@ const typeDefs = gql`
     ): Product
   }
 `;
-
-export default typeDefs;

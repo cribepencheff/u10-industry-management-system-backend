@@ -1,9 +1,6 @@
 export const resolvers = {
   Query: {
-    works: async (_p, args) => {},
-    work: async (_p, { id }) => {},
-  },
-  Work: {
-    composer: async (doc) => {},
+    contacts: async (_p, args) => {},
+    contact: async (_p, { id }) => {},
   },
 };

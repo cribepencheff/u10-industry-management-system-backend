@@ -1,31 +1,33 @@
-const typeDefs = gql`
-  type Product {
+import { gql } from "apollo-server-express";
+
+export const typeDefs = gql`
+  type Manufacturer {
     id: ID!
     name: String!
-    sku: String!
+    country: String!
+    website: String
     description: String
-    price: Float!
-    category: String!
-    manufacturer: String!
-    amountInStock: Int!
+    address: String
+    contact: String
+    createdAt: String
+    updatedAt: String
   }
 
   type Query {
-    products: [Product]
-    product(id: ID!): Product
+    manufacturers: [Manufacturer]
+    manufacturer(id: ID!): Manufacturer
   }
 
   type Mutation {
-    addProduct(
+    addManufacturer(
       name: String!
-      sku: String!
+      country: String!
+      website: String
       description: String
-      price: Float!
-      category: String!
-      manufacturer: String!
-      amountInStock: Int!
-    ): Product
+      address: String
+      contact: String
+      createdAt: String
+      updatedAt: String
+    ): Manufacturer
   }
 `;
-
-export default typeDefs;
