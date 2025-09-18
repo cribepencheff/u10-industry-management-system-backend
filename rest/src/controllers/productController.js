@@ -96,21 +96,36 @@ export const getProduct = async (req, res) => {
 
 // Update a product
 export const updateProduct = async (req, res) => {
+  const { name, sku, description, price, category, manufacturer,  amountInStock } = req.body;
+
   if (!mongoose.isValidObjectId(req.params.id)) {
-    return res.status(400).json({ error: "ID must be valid ObjectID" });
+    return res.status(400).json({ error: "Product ID must be valid ObjectID" });
   }
+
+  if (!mongoose.Types.ObjectId.isValid(manufacturer)) {
+    return res.status(400).json({ error: "Manufacturer ID must be a valid ObjectID" });
+  }
+
+  const existingProduct = await ProductModel.findById(req.params.id);
+  if (!existingProduct) {
+    return res.status(404).json({ error: "Product not found" });
+  }
+
+  const existingManufacturer = await ManufacturerModel.findById(manufacturer)
+  if ( existingManufacturer === null) {
+    return res.status(400).json({ error: "Manufacturer does not exist" });
+  }
+
   try {
-    const products = await ProductModel.findByIdAndUpdate(
+    const product = await ProductModel.findByIdAndUpdate(
       req.params.id,
       req.body,
-      {
-        new: true,
-        runValidators: true,
-      }
+      { new: true, runValidators: true}
     );
-    res.json(products);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(200).json(product);
+  } catch (error) {
+    console.error(`[products/${req.params.id}]`, error);
+    res.status(500).json({ error: "Failed to update product" });
   }
 };
 
