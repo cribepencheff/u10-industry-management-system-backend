@@ -11,8 +11,9 @@ const ContactSchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
+    // TODO: Should number be required?
     phone: {
-      type: Number,
+      type: String,
       required: true,
     },
   },
