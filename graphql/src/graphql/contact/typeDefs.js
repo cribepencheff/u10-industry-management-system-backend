@@ -10,18 +10,21 @@ export const typeDefs = gql`
     updatedAt: String
   }
 
+  # Input type for creating/updating contacts
+  input ContactInput {
+    name: String!
+    email: String!
+    phone: String
+  }
+
   type Query {
     contacts: [Contact]
     contact(id: ID!): Contact
   }
 
   type Mutation {
-    addContact(
-      name: String!
-      email: String!
-      phone: String
-      createdAt: String
-      updatedAt: String
-    ): Contact
+    addContact(input: ContactInput!): Contact
+    updateContact(id: ID!, input: ContactInput!): Contact
+    deleteContact(id: ID!): Boolean
   }
 `;

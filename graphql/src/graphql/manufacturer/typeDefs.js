@@ -13,21 +13,24 @@ export const typeDefs = gql`
     updatedAt: String
   }
 
+  # Input type for creating/updating manufacturers
+  input ManufacturerInput {
+    name: String!
+    country: String!
+    website: String
+    description: String
+    address: String
+    contact: String
+  }
+
   type Query {
     manufacturers: [Manufacturer]
     manufacturer(id: ID!): Manufacturer
   }
 
   type Mutation {
-    addManufacturer(
-      name: String!
-      country: String!
-      website: String
-      description: String
-      address: String
-      contact: String
-      createdAt: String
-      updatedAt: String
-    ): Manufacturer
+    addManufacturer(input: ManufacturerInput!): Manufacturer
+    updateManufacturer(id: ID!, input: ManufacturerInput!): Manufacturer
+    deleteManufacturer(id: ID!): Boolean
   }
 `;

@@ -10,6 +10,18 @@ export const typeDefs = gql`
     category: String!
     manufacturer: String!
     amountInStock: Int!
+    createdAt: String
+    updatedAt: String
+  }
+
+  input ProductInput {
+    name: String!
+    sku: String!
+    description: String
+    price: Float!
+    category: String!
+    manufacturer: String!
+    amountInStock: Int!
   }
 
   type Query {
@@ -18,14 +30,8 @@ export const typeDefs = gql`
   }
 
   type Mutation {
-    addProduct(
-      name: String!
-      sku: String!
-      description: String
-      price: Float!
-      category: String!
-      manufacturer: String!
-      amountInStock: Int!
-    ): Product
+    addProduct(input: ProductInput!): Product
+    updateProduct(id: ID!, input: ProductInput!): Product
+    deleteProduct(id: ID!): Boolean
   }
 `;
