@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 import { ApolloServer } from "@apollo/server";
 import { expressMiddleware } from "@as-integrations/express4";
 import { connectDB } from "./config/db.js";
-import { success, error, underline } from "../utils/colors.js";
+import { success, error, underline } from "./utils/colors.js";
 import { typeDefs } from "./graphql/index.js";
 import { resolvers } from "./graphql/index.js";
 
