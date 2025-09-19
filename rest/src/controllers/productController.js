@@ -149,3 +149,76 @@ export const deleteProduct = async (req, res) => {
     return res.status(500).json({ error: "Failed to delete product" } );
   }
 };
+
+// Total value of all products in stock
+
+export const getTotalValueOfAllProducts = async (req, res) => {
+  try {
+    const result = await ProductModel.aggregate([
+      {
+        $group: {
+          _id: null,
+          totalValue: {
+            $sum: { $multiply: ["$price", "$amountInStock"] }
+          }
+        }
+      }
+    ]);
+
+    if (result.length === 0) {
+      return res.status(200).json({ totalValue: 0 });
+    }
+
+    res.status(200).json({ totalValue: Number(result[0]?.totalValue.toFixed(2)) });
+
+  } catch (error) {
+    res.status(500).json({ error: "Error calculating total value of products" });
+  }
+};
+
+export const getTotalValueByManufacturer = async (req, res) => {
+  try {
+    const result = await ProductModel.aggregate([
+      {
+        $lookup: {
+          from: "manufacturers",
+          localField: "manufacturer",
+          foreignField: "_id",
+           as: "manufacturerData"
+        }
+      },
+      {
+        $unwind: "$manufacturerData"
+      },
+      {
+        $group: {
+          _id: "$manufacturerData.name",
+          totalValue: {
+            $sum: {
+              $multiply: ["$price", "$amountInStock"]}
+          }
+        }
+      },
+      { $project: {
+        _id: 0,
+        manufacturer: "$_id",
+        totalValue: 1
+      }}
+
+    ])
+
+    if(result.length === 0) {
+      return res.status(200).json([]);
+    }
+
+    const formattedResult = result.map(item => ({
+      manufacturer: item.manufacturer,
+      totalValue: Number(item.totalValue.toFixed(2))
+    }));
+
+    res.status(200).json(formattedResult);
+          
+  } catch (error) {
+    res.status(500).json({ error: "Error calculating total value by manufacturer" });
+  }
+};
