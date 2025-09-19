@@ -6,11 +6,13 @@ import {
   updateProduct,
   deleteProduct,
   getTotalValueOfAllProducts,
+  getTotalValueByManufacturer,
 } from "../controllers/productController.js";
 
 const router = express.Router();
 
 router.get("/total-stock-value", getTotalValueOfAllProducts);
+router.get("/total-stock-value-by-manufacturer", getTotalValueByManufacturer);
 
 router.post("/", createProduct);
 router.get("/", getProducts);
