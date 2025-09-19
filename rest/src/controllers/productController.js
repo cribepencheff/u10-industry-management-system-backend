@@ -151,7 +151,6 @@ export const deleteProduct = async (req, res) => {
 };
 
 // Total value of all products in stock
-
 export const getTotalValueOfAllProducts = async (req, res) => {
   try {
     const result = await ProductModel.aggregate([
@@ -176,6 +175,7 @@ export const getTotalValueOfAllProducts = async (req, res) => {
   }
 };
 
+// Total value of products in stock by manufacturer
 export const getTotalValueByManufacturer = async (req, res) => {
   try {
     const result = await ProductModel.aggregate([
@@ -217,8 +217,47 @@ export const getTotalValueByManufacturer = async (req, res) => {
     }));
 
     res.status(200).json(formattedResult);
-          
+
   } catch (error) {
     res.status(500).json({ error: "Error calculating total value by manufacturer" });
   }
 };
+
+// Get products with critical stock (less than 5 items), including manufacturer and contact details
+export const getProductsByCriticalStock = async (req, res) => {
+  try {
+    const pipeline = [
+      { $match: { amountInStock: { $lt: 56 } } },
+      { $lookup: {
+          from: "manufacturers",
+          localField: "manufacturer",
+          foreignField: "_id",
+          as: "manufacturerData"
+        }},
+      { $unwind: "$manufacturerData" },
+      { $lookup: {
+          from: "contacts",
+          localField: "manufacturerData.contact",
+          foreignField: "_id",
+          as: "contactData"
+        }},
+      { $unwind: "$contactData" },
+      { $project: {
+          _id: 0,
+          name: "$name",
+          sku: 1,
+          amountInStock: 1,
+          manufacturer: "$manufacturerData.name",
+          contactName: "$contactData.name",
+          phone: "$contactData.phone",
+          email: "$contactData.email"
+        }}
+    ];
+
+    const products = await ProductModel.aggregate(pipeline);
+    res.status(200).json(products);
+  } catch (error) {
+    console.error("[products/critical-stock]", error);
+    res.status(500).json({ error: "Error fetching products with critical stock" });
+  }
+}
