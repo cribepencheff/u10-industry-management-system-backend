@@ -94,13 +94,11 @@ export const resolvers = {
     },
     getLowStockProducts: async (_parent, args) => {
       try {
-        const products = await ProductModel.find({
-          amountInStock: { $lt: 10 },
+        const products = await ProductModel.find({ amountInStock: { $lt: 10 } }).populate({
+          path: "manufacturer",
+          select: "name contact",
+          populate: { path: "contact" }
         });
-
-        if (products.length === 0) {
-          return "No low stock products";
-        }
 
         return products;
       } catch (error) {
@@ -113,11 +111,8 @@ export const resolvers = {
           .select("name sku amountInStock manufacturer")
           .populate({
             path: "manufacturer",
-            select: "name contact -_id",
-            populate: {
-              path: "contact",
-              select: "name phone email -_id"
-            }
+            select: "name contact",
+            populate: { path: "contact" }
           });
 
         return products;

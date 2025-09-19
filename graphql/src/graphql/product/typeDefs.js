@@ -6,7 +6,7 @@ export const typeDefs = /* GraphQL */`
     description: String
     price: Float!
     category: String!
-    manufacturer: String!
+    manufacturer: Manufacturer!
     amountInStock: Int!
     createdAt: String
     updatedAt: String
@@ -15,16 +15,6 @@ export const typeDefs = /* GraphQL */`
   type TotalValueResult {
     totalValue: Float!
     message: String
-  }
-
-  type CriticalStockProduct {
-    name: String!
-    sku: String!
-    amountInStock: Int!
-    manufacturer: String!
-    contactName: String!
-    phone: String
-    email: String
   }
 
   type ManufacturerTotalValue {
@@ -48,7 +38,7 @@ export const typeDefs = /* GraphQL */`
     getTotalValueOfAllProducts: Float!
     getTotalValueByManufacturer: [ManufacturerTotalValue!]
     getLowStockProducts: [Product!]
-    getProductsByCriticalStock: [CriticalStockProduct!]
+    getProductsByCriticalStock: [Product!]!
   }
 
   type Mutation {
