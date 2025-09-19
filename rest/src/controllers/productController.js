@@ -151,7 +151,6 @@ export const deleteProduct = async (req, res) => {
 };
 
 // Total value of all products in stock
-
 export const getTotalValueOfAllProducts = async (req, res) => {
   try {
     const result = await ProductModel.aggregate([
@@ -177,7 +176,6 @@ export const getTotalValueOfAllProducts = async (req, res) => {
 };
 
 // Total value of products in stock by manufacturer
-
 export const getTotalValueByManufacturer = async (req, res) => {
   try {
     const result = await ProductModel.aggregate([
@@ -186,7 +184,7 @@ export const getTotalValueByManufacturer = async (req, res) => {
           from: "manufacturers",
           localField: "manufacturer",
           foreignField: "_id",
-           as: "manufacturerData"
+          as: "manufacturerData"
         }
       },
       {
@@ -219,14 +217,13 @@ export const getTotalValueByManufacturer = async (req, res) => {
     }));
 
     res.status(200).json(formattedResult);
-          
+
   } catch (error) {
     res.status(500).json({ error: "Error calculating total value by manufacturer" });
   }
 };
 
 // low stock products, fewer than 10 in stock
-
 export const getLowStockProducts = async (req, res) => {
   try {
     const products = await ProductModel.find({ amountInStock: { $lt: 10 } })
@@ -240,3 +237,47 @@ export const getLowStockProducts = async (req, res) => {
     res.status(500).json({ error: "Error fetching low stock products" });
   }
 };
+
+// Get products with critical stock (less than 5 items), including manufacturer and contact details
+export const getProductsByCriticalStock = async (req, res) => {
+  try {
+    const pipeline = [
+      { $match: { amountInStock: { $lt: 5 } } },
+      { $lookup: {
+          from: "manufacturers",
+          localField: "manufacturer",
+          foreignField: "_id",
+          as: "manufacturerData"
+        }},
+      { $unwind: "$manufacturerData" },
+      { $lookup: {
+          from: "contacts",
+          localField: "manufacturerData.contact",
+          foreignField: "_id",
+          as: "contactData"
+        }},
+      { $unwind: "$contactData" },
+      { $project: {
+          _id: 0,
+          name: "$name",
+          sku: 1,
+          amountInStock: 1,
+          manufacturer: "$manufacturerData.name",
+          contactName: "$contactData.name",
+          phone: "$contactData.phone",
+          email: "$contactData.email"
+        }}
+    ];
+
+    const products = await ProductModel.aggregate(pipeline);
+
+    if (products.length === 0) {
+      return res.status(200).json({ message: "No critical stock found" });
+    }
+
+    return res.status(200).json(products);
+  } catch (error) {
+    console.error("[products/critical-stock]", error);
+    return res.status(500).json({ error: "Error fetching products with critical stock" });
+  }
+}
