@@ -241,7 +241,7 @@ export const getLowStockProducts = async (req, res) => {
 // Get products with critical stock (less than 5 items), including manufacturer and contact details
 export const getProductsByCriticalStock = async (req, res) => {
   try {
-    const products = await ProductModel.find({ amountInStock: { $lt: 50 } })
+    const products = await ProductModel.find({ amountInStock: { $lt: 5 } })
       .select("name sku amountInStock manufacturer")
       .populate({
         path: "manufacturer",

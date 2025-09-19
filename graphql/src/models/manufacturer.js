@@ -8,8 +8,7 @@ const ManufacturerSchema = new Schema(
     },
     country: {
       type: String,
-      required: true,
-      unique: true,
+      required: true
     },
     website: {
       type: String,
@@ -21,8 +20,7 @@ const ManufacturerSchema = new Schema(
     },
     address: {
       type: String,
-      required: true,
-      unique: true,
+      required: true
     },
     contact: {
       type: Schema.Types.ObjectId,
@@ -34,7 +32,4 @@ const ManufacturerSchema = new Schema(
   { timestamps: true }
 );
 
-export const ManufacturerModel = mongoose.model(
-  "Manufacturer",
-  ManufacturerSchema
-);
+export const ManufacturerModel = mongoose.model("Manufacturer", ManufacturerSchema);

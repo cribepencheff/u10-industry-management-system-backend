@@ -12,7 +12,7 @@ export const resolvers = {
     },
     manufacturer: async (_parent, { id }) => {
       try {
-        const manufacturer = await ManufacturerModel.find(id);
+        const manufacturer = await ManufacturerModel.findById(id);
         return manufacturer;
       } catch (error) {
         throw new Error("Error fetching products: " + error.message);
