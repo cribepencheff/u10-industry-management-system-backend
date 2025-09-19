@@ -227,7 +227,7 @@ export const getTotalValueByManufacturer = async (req, res) => {
 export const getProductsByCriticalStock = async (req, res) => {
   try {
     const pipeline = [
-      { $match: { amountInStock: { $lt: 56 } } },
+      { $match: { amountInStock: { $lt: 5 } } },
       { $lookup: {
           from: "manufacturers",
           localField: "manufacturer",
@@ -255,9 +255,14 @@ export const getProductsByCriticalStock = async (req, res) => {
     ];
 
     const products = await ProductModel.aggregate(pipeline);
-    res.status(200).json(products);
+
+    if (products.length === 0) {
+      return res.status(200).json({ message: "No critical stock found" });
+    }
+
+    return res.status(200).json(products);
   } catch (error) {
     console.error("[products/critical-stock]", error);
-    res.status(500).json({ error: "Error fetching products with critical stock" });
+    return res.status(500).json({ error: "Error fetching products with critical stock" });
   }
 }
