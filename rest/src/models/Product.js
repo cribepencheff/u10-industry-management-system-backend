@@ -1,6 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 
-const ProductSchema = new Schema (
+const ProductSchema = new Schema(
   {
     name: {
       type: String,
@@ -24,7 +24,8 @@ const ProductSchema = new Schema (
       required: true,
     },
     manufacturer: {
-      type: Schema.Types.ObjectId, ref: "Manufacturer",
+      type: Schema.Types.ObjectId,
+      ref: "Manufacturer",
       default: null,
       required: true,
     },

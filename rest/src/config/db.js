@@ -1,4 +1,4 @@
-import { success } from "../utils/colors.js";
+import { success } from "../utils/color.js";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 dotenv.config();

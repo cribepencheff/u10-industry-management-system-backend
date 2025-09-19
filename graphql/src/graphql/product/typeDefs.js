@@ -19,6 +19,16 @@ export const typeDefs = gql`
     message: String
   }
 
+  type CriticalStockProduct {
+    name: String!
+    sku: String!
+    amountInStock: Int!
+    manufacturer: String!
+    contactName: String!
+    phone: String
+    email: String
+  }
+
   type ManufacturerTotalValue {
     manufacturer: String!
     totalValue: Float!
@@ -39,6 +49,8 @@ export const typeDefs = gql`
     product(id: ID!): Product
     getTotalValueOfAllProducts: Float!
     getTotalValueByManufacturer: [ManufacturerTotalValue!]
+    getLowStockProducts: [Product!]
+    getProductsByCriticalStock: [CriticalStockProduct!]
   }
 
   type Mutation {

@@ -92,6 +92,68 @@ export const resolvers = {
         );
       }
     },
+    getLowStockProducts: async (_parent, args) => {
+      try {
+        const products = await ProductModel.find({
+          amountInStock: { $lt: 10 },
+        });
+
+        if (products.length === 0) {
+          return "No low stock products";
+        }
+
+        return products;
+      } catch (error) {
+        throw new Error("Error fetching low stock products" + error.message);
+      }
+    },
+    getProductsByCriticalStock: async (_parent, args) => {
+      try {
+        const pipeline = [
+          { $match: { amountInStock: { $lt: 5 } } },
+          {
+            $lookup: {
+              from: "manufacturers",
+              localField: "manufacturer",
+              foreignField: "_id",
+              as: "manufacturerData",
+            },
+          },
+          { $unwind: "$manufacturerData" },
+          {
+            $lookup: {
+              from: "contacts",
+              localField: "manufacturerData.contact",
+              foreignField: "_id",
+              as: "contactData",
+            },
+          },
+          { $unwind: "$contactData" },
+          {
+            $project: {
+              _id: 0,
+              name: "$name",
+              sku: 1,
+              amountInStock: 1,
+              manufacturer: "$manufacturerData.name",
+              contactName: "$contactData.name",
+              phone: "$contactData.phone",
+              email: "$contactData.email",
+            },
+          },
+        ];
+
+        const products = await ProductModel.aggregate(pipeline);
+
+        if (products.length === 0) {
+          return [];
+        }
+
+        return products;
+      } catch (error) {
+        throw new Error("[products/critical-stock]" + error.message);
+      }
+    },
   },
   Mutation: {
     addProduct: async (_parent, { input }) => {
