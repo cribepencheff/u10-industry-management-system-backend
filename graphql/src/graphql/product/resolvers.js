@@ -2,7 +2,7 @@ import { ProductModel } from "../../models/Product.js";
 
 export const resolvers = {
   Query: {
-    products: async (_parent, args) => {
+    products: async (_parent) => {
       try {
         const products = await ProductModel.find();
         return products;
@@ -12,8 +12,8 @@ export const resolvers = {
     },
     product: async (_parent, { id }) => {
       try {
-        const products = await ProductModel.find(id);
-        return products;
+        const product = await ProductModel.findById(id);
+        return product;
       } catch (error) {
         throw new Error("Error fetching products: " + error.message);
       }
@@ -109,45 +109,16 @@ export const resolvers = {
     },
     getProductsByCriticalStock: async (_parent, args) => {
       try {
-        const pipeline = [
-          { $match: { amountInStock: { $lt: 5 } } },
-          {
-            $lookup: {
-              from: "manufacturers",
-              localField: "manufacturer",
-              foreignField: "_id",
-              as: "manufacturerData",
-            },
-          },
-          { $unwind: "$manufacturerData" },
-          {
-            $lookup: {
-              from: "contacts",
-              localField: "manufacturerData.contact",
-              foreignField: "_id",
-              as: "contactData",
-            },
-          },
-          { $unwind: "$contactData" },
-          {
-            $project: {
-              _id: 0,
-              name: "$name",
-              sku: 1,
-              amountInStock: 1,
-              manufacturer: "$manufacturerData.name",
-              contactName: "$contactData.name",
-              phone: "$contactData.phone",
-              email: "$contactData.email",
-            },
-          },
-        ];
-
-        const products = await ProductModel.aggregate(pipeline);
-
-        if (products.length === 0) {
-          return [];
-        }
+        const products = await ProductModel.find({ amountInStock: { $lt: 5 } })
+          .select("name sku amountInStock manufacturer")
+          .populate({
+            path: "manufacturer",
+            select: "name contact -_id",
+            populate: {
+              path: "contact",
+              select: "name phone email -_id"
+            }
+          });
 
         return products;
       } catch (error) {
