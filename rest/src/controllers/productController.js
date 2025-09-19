@@ -60,8 +60,8 @@ export const deleteProduct = async (req, res) => {
     return res.status(400).json({ error: "ID must be valid ObjectID" });
   }
   try {
-    const products = await ProductModel.findByIdAndDelete(req.params.id);
-    res.json(products);
+    const product = await ProductModel.findByIdAndDelete(req.params.id);
+    res.json(product);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

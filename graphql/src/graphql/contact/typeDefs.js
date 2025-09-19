@@ -9,8 +9,6 @@ export const typeDefs = gql`
     createdAt: String
     updatedAt: String
   }
-
-  # Input type for creating/updating contacts
   input ContactInput {
     name: String!
     email: String!

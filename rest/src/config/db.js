@@ -11,10 +11,14 @@ export const connectDB = async () => {
   if (!MONGODB_URI) throw new Error("MONGODB_URI not found in .env");
   if (!DB_NAME) throw new Error("DB_NAME not found in .env");
 
-  await mongoose.connect(MONGODB_URI, { dbName: DB_NAME, appName: CLUSTER_NAME });
+  await mongoose.connect(MONGODB_URI, {
+    dbName: DB_NAME,
+    appName: CLUSTER_NAME,
+  });
 
-  if (!mongoose.connection.db) {throw new Error("MongoDB connection not initialized")}
+  if (!mongoose.connection.db) {
+    throw new Error("MongoDB connection not initialized");
+  }
   await mongoose.connection.db.admin().ping();
   console.log(success("✓"), "MongoDB connected and responding");
 };
-
