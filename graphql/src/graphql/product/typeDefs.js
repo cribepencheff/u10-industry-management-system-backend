@@ -14,6 +14,16 @@ export const typeDefs = gql`
     updatedAt: String
   }
 
+  type TotalValueResult {
+    totalValue: Float!
+    message: String
+  }
+
+  type ManufacturerTotalValue {
+    manufacturer: String!
+    totalValue: Float!
+  }
+
   input ProductInput {
     name: String!
     sku: String!
@@ -27,6 +37,8 @@ export const typeDefs = gql`
   type Query {
     products: [Product]
     product(id: ID!): Product
+    getTotalValueOfAllProducts: Float!
+    getTotalValueByManufacturer: [ManufacturerTotalValue!]
   }
 
   type Mutation {
