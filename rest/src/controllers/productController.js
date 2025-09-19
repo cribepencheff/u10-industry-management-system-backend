@@ -184,7 +184,7 @@ export const getTotalValueByManufacturer = async (req, res) => {
           from: "manufacturers",
           localField: "manufacturer",
           foreignField: "_id",
-           as: "manufacturerData"
+          as: "manufacturerData"
         }
       },
       {
@@ -220,6 +220,21 @@ export const getTotalValueByManufacturer = async (req, res) => {
 
   } catch (error) {
     res.status(500).json({ error: "Error calculating total value by manufacturer" });
+  }
+};
+
+// low stock products, fewer than 10 in stock
+export const getLowStockProducts = async (req, res) => {
+  try {
+    const products = await ProductModel.find({ amountInStock: { $lt: 10 } })
+
+    if(products.length === 0) {
+      return res.status(200).json({message: "No low stock products"});
+    }
+
+    res.status(200).json(products);
+  } catch (error) {
+    res.status(500).json({ error: "Error fetching low stock products" });
   }
 };
 
