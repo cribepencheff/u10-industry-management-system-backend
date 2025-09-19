@@ -11,13 +11,12 @@ dotenv.config();
 const PORT = process.env.PORT || 3000;
 const app = express();
 
-// Middleware
 app.use(express.json());
 
-// Routes
 app.use("/api/contact", contactRoutes);
 app.use("/api/manufacturer", manufacturerRoutes);
 app.use("/api/product", productRoutes);
+
 
 connectDB()
   .then(() => {
