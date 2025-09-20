@@ -1,4 +1,4 @@
-import { ContactModel } from "../../models/Contact.js";
+import { ContactModel } from "../../models/contact.js";
 
 export const resolvers = {
   Query: {

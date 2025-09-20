@@ -6,7 +6,7 @@ export const typeDefs = /* GraphQL */ `
     website: String
     description: String
     address: String
-    contact: Contact
+    contact: Contact!
     createdAt: String
     updatedAt: String
   }
