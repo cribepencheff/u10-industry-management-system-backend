@@ -4,7 +4,9 @@ export const resolvers = {
   Query: {
     products: async (_parent) => {
       try {
-        const products = await ProductModel.find();
+        const products = await ProductModel.find()
+          .populate({ path: "manufacturer", populate: { path: "contact"} });
+
         return products;
       } catch (error) {
         throw new Error("Error fetching products: " + error.message);
@@ -12,7 +14,8 @@ export const resolvers = {
     },
     product: async (_parent, { id }) => {
       try {
-        const product = await ProductModel.findById(id);
+        const product = await ProductModel.findById(id)
+          .populate({ path: "manufacturer", populate: { path: "contact"} });
         return product;
       } catch (error) {
         throw new Error("Error fetching products: " + error.message);
