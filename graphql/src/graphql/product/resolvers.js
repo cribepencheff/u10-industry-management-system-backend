@@ -99,7 +99,6 @@ export const resolvers = {
       try {
         const products = await ProductModel.find({ amountInStock: { $lt: 10 } }).populate({
           path: "manufacturer",
-          select: "name contact",
           populate: { path: "contact" }
         });
 
