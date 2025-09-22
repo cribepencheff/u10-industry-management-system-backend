@@ -1,6 +1,4 @@
-import { gql } from "apollo-server-express";
-
-export const typeDefs = gql`
+export const typeDefs = /* GraphQL */ `
   type Manufacturer {
     id: ID!
     name: String!
@@ -8,7 +6,7 @@ export const typeDefs = gql`
     website: String
     description: String
     address: String
-    contact: String
+    contact: Contact!
     createdAt: String
     updatedAt: String
   }

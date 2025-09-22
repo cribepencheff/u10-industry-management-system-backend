@@ -1,39 +1,35 @@
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
-const manufacturerSchema = new mongoose.Schema(
+const ManufacturerSchema = new Schema(
   {
     name: {
       type: String,
       required: true,
-      trim: true,
     },
     country: {
       type: String,
-      required: true,
-      trim: true,
+      required: true
     },
     website: {
       type: String,
-      trim: true,
+      required: true,
     },
     description: {
       type: String,
-      default: "",
+      required: true,
     },
     address: {
       type: String,
-      trim: true,
+      required: true
     },
     contact: {
-      type: String,
-      trim: true,
+      type: Schema.Types.ObjectId,
+      ref: "Contact",
+      default: null,
+      required: true,
     },
   },
-  {
-    timestamps: true,
-  }
+  { timestamps: true }
 );
 
-const ManufacturerModel = mongoose.model("Manufacturer", manufacturerSchema);
-
-export default ManufacturerModel;
+export const ManufacturerModel = mongoose.model("Manufacturer", ManufacturerSchema);

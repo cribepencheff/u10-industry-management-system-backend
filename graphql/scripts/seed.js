@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import { faker } from "@faker-js/faker";
-import { ContactModel } from "../src/models/Contact.js";
-import { ManufacturerModel } from "../src/models/Manufacturer.js";
+import { ContactModel } from "../src/models/contact.js";
+import { ManufacturerModel } from "../src/models/manufacturer.js";
 import { ProductModel } from "../src/models/Product.js";
 
 dotenv.config();
@@ -44,7 +44,7 @@ async function seedDatabase() {
 
   // Create manufacturers
   const manufacturers = Array.from({ length: 8 }).map(() => ({
-    name: faker.company.name(),
+    name: faker.company.name() || "Unknown Company",
     country: faker.location.country(),
     website: faker.internet.url(),
     description: faker.company.catchPhrase(),

@@ -8,8 +8,7 @@ const ManufacturerSchema = new Schema (
     },
     country: {
       type: String,
-      required: true,
-      unique: true,
+      required: true
     },
     website: {
       type: String,
@@ -19,10 +18,9 @@ const ManufacturerSchema = new Schema (
       type: String,
       required: true,
     },
-    adress: {
+    address: {
       type: String,
-      required: true,
-      unique: true,
+      required: true
     },
     contact: {
       type: Schema.Types.ObjectId, ref: "Contact",
