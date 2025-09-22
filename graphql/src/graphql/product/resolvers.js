@@ -1,4 +1,6 @@
+import mongoose from "mongoose";
 import { ProductModel } from "../../models/product.js";
+import { ManufacturerModel } from "../../models/manufacturer.js";
 
 export const resolvers = {
   Query: {
@@ -124,7 +126,43 @@ export const resolvers = {
   },
   Mutation: {
     addProduct: async (_parent, { input }) => {
-      return ProductModel.create(input);
+      const { name, sku, description, price, category, manufacturer, amountInStock } = input;
+
+      if (!name || !sku || !description || !price || !category || !manufacturer || !amountInStock) {
+        throw new Error(`All fields are required: ${Object.values(input).join(", ")}`);
+      }
+
+      if (!mongoose.isValidObjectId(manufacturer)) {
+        throw new Error("Manufacturer ID must be a valid ObjectID");
+      }
+
+      try {
+        const existingManufacturer = await ManufacturerModel.findById(manufacturer);
+        if (!existingManufacturer) {
+          throw new Error("Manufacturer does not exist");
+        }
+
+        const existingProduct = await ProductModel.findOne({ sku });
+        if (existingProduct) {
+          throw new Error(`A product with SKU ${sku} already exists.`);
+        }
+
+        const newProduct = await ProductModel.create({
+          name,
+          sku,
+          description,
+          price,
+          category,
+          manufacturer,
+          amountInStock,
+        });
+
+        await newProduct.populate("manufacturer");
+        return newProduct;
+
+      } catch (error) {
+        throw new Error(error.message);
+      }
     },
-  },
+  }
 };
