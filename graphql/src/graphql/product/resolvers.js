@@ -142,11 +142,6 @@ export const resolvers = {
           throw new Error("Manufacturer does not exist");
         }
 
-        const existingProduct = await ProductModel.findOne({ sku });
-        if (existingProduct) {
-          throw new Error(`A product with SKU ${sku} already exists.`);
-        }
-
         const newProduct = await ProductModel.create({
           name,
           sku,
@@ -161,7 +156,11 @@ export const resolvers = {
         return newProduct;
 
       } catch (error) {
-        throw new Error(error.message);
+        if (error.code === 11000) {
+          throw new Error(`A product with SKU "${sku}" already exists.`);
+        }
+
+        throw new Error("Error creating product");
       }
     },
   }
