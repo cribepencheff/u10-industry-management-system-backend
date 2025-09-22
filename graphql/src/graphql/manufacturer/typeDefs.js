@@ -2,7 +2,7 @@ export const typeDefs = /* GraphQL */ `
   type Manufacturer {
     id: ID!
     name: String!
-    country: String!
+    country: String
     website: String
     description: String
     address: String

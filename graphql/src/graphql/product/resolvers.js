@@ -110,7 +110,6 @@ export const resolvers = {
     getProductsByCriticalStock: async (_parent, args) => {
       try {
         const products = await ProductModel.find({ amountInStock: { $lt: 5 } })
-          .select("name sku amountInStock manufacturer")
           .populate({
             path: "manufacturer",
             select: "name contact",
