@@ -11,7 +11,7 @@ export const resolvers = {
 
         return products;
       } catch (error) {
-        throw new Error("Error fetching products: " + error.message);
+        throw new Error(`Error fetching products: ${error.message}`);
       }
     },
     product: async (_parent, { id }) => {
@@ -20,7 +20,7 @@ export const resolvers = {
           .populate({ path: "manufacturer", populate: { path: "contact"} });
         return product;
       } catch (error) {
-        throw new Error("Error fetching products: " + error.message);
+        throw new Error(`Error fetching products: ${error.message}`);
       }
     },
     getTotalValueOfAllProducts: async (_parent, args) => {
@@ -43,9 +43,7 @@ export const resolvers = {
         const value = Number(result[0]?.totalValue.toFixed(2));
         return value;
       } catch (error) {
-        throw new Error(
-          "Error calculating total value of products" + error.message
-        );
+        throw new Error(`Error calculating total value of products ${error.message}`);
       }
     },
     getTotalValueByManufacturer: async (_parent, args) => {
@@ -99,14 +97,15 @@ export const resolvers = {
     },
     getLowStockProducts: async (_parent, args) => {
       try {
-        const products = await ProductModel.find({ amountInStock: { $lt: 10 } }).populate({
-          path: "manufacturer",
-          populate: { path: "contact" }
-        });
+        const products = await ProductModel.find({ amountInStock: { $lt: 10 } })
+          .populate({
+            path: "manufacturer",
+            populate: { path: "contact" }
+          });
 
         return products;
       } catch (error) {
-        throw new Error("Error fetching low stock products" + error.message);
+        throw new Error(`Error fetching low stock products ${error.message}`);
       }
     },
     getProductsByCriticalStock: async (_parent, args) => {
@@ -122,7 +121,7 @@ export const resolvers = {
 
         return products;
       } catch (error) {
-        throw new Error("[products/critical-stock]" + error.message);
+        throw new Error(`Error fetching critical stock products ${error.message}`);
       }
     },
   },
@@ -229,6 +228,7 @@ export const resolvers = {
     },
   },
 
+  //
   // Resolvers ensure MongoDB ObjectIds are returned as strings in GraphQL schema.
   Product: {
     id: (doc) => String(doc._id),
