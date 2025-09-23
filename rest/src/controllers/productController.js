@@ -84,45 +84,60 @@ export const getProduct = async (req, res) => {
     }
 
     res.status(200).json(product);
-  } catch (err) {
-    console.error(`[products/${req.params.id}]`, err);
+  } catch (error) {
+    console.error(`[products/${req.params.id}]`, error);
     res.status(500).json({ error: err.message });
   }
 };
 
 // Update a product
 export const updateProduct = async (req, res) => {
-  const { name, sku, description, price, category, manufacturer,  amountInStock } = req.body;
+  const allowedFields = ["name", "sku", "description", "price", "category", "manufacturer", "amountInStock"];
+  const validInputs = {};
+
+  allowedFields.forEach(field => {
+    if (field in req.body) validInputs[field] = req.body[field];
+  });
+
+  if (!Object.keys(validInputs).length) {
+    return res.status(400).json({ error: `At least one of the following fields must be provided: ${allowedFields.join(", ")}` });
+  }
+
 
   if (!mongoose.isValidObjectId(req.params.id)) {
     return res.status(400).json({ error: "Product ID must be valid ObjectID" });
   }
 
-  if (!mongoose.isValidObjectId(manufacturer)) {
+  if ("manufacturer" in validInputs && !mongoose.isValidObjectId(validInputs.manufacturer)) {
     return res.status(400).json({ error: "Manufacturer ID must be a valid ObjectID" });
   }
 
-  const existingProduct = await ProductModel.findById(req.params.id);
-  if (!existingProduct) {
-    return res.status(404).json({ error: "Product not found" });
-  }
-
-  const existingManufacturer = await ManufacturerModel.findById(manufacturer)
-  if ( existingManufacturer === null) {
-    return res.status(400).json({ error: "Manufacturer does not exist" });
+  if ("manufacturer" in validInputs) {
+    const existingManufacturer = await ManufacturerModel.findById(validInputs.manufacturer);
+    if (!existingManufacturer) return res.status(400).json({ error: "Manufacturer does not exist" });
   }
 
   try {
     const updatedProduct = await ProductModel.findByIdAndUpdate(
       req.params.id,
-      req.body,
+      validInputs,
       { new: true, runValidators: true }
     );
+
+    if (!updatedProduct) {
+      return res.status(404).json({ error: "Product not found" });
+    }
+
     return res.status(200).json({
       message: "Product updated successfully",
       product: updatedProduct
     });
+
   } catch (error) {
+    if (error.code === 11000) {
+      return res.status(409).json({ error: `A product with SKU "${validInputs.sku}" already exists.` });
+    }
+
     console.error(`[products/${req.params.id}]`, error);
     return res.status(500).json({ error: "Failed to update product" });
   }

@@ -32,6 +32,17 @@ export const typeDefs = /* GraphQL */`
     amountInStock: Int!
   }
 
+  # Input type for updating a product (all fields optional!)
+  input ProductUpdateInput {
+    name: String
+    sku: String
+    description: String
+    price: Float
+    category: String
+    manufacturer: String
+    amountInStock: Int
+  }
+
   type Query {
     products: [Product]
     product(id: ID!): Product
@@ -43,7 +54,7 @@ export const typeDefs = /* GraphQL */`
 
   type Mutation {
     addProduct(input: ProductInput!): Product
-    updateProduct(id: ID!, input: ProductInput!): Product
+    updateProduct(id: ID!, input: ProductUpdateInput!): Product
     deleteProduct(id: ID!): Boolean
   }
 `;
