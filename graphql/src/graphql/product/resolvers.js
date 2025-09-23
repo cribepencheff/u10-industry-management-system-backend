@@ -207,7 +207,24 @@ export const resolvers = {
         if (error.code === 11000) {
           throw new Error(`A product with SKU "${validInputs.sku}" already exists.`);
         }
-        throw new Error(`Error creating product: ${error.message}`);
+        throw new Error(`Error updating product: ${error.message}`);
+      }
+    },
+    deleteProduct: async (_parent, { id }) => {
+      if (!mongoose.isValidObjectId(id)) {
+        throw new Error("Product ID must be valid ObjectID");
+      }
+
+      const existingProduct = await ProductModel.findById(id);
+      if (!existingProduct) {
+        throw new Error("Product not found");
+      }
+
+      try {
+        const deletedProduct = await ProductModel.findByIdAndDelete(id);
+        return deletedProduct ? true : false;
+      } catch (error) {
+        throw new Error(`Error deleting product: ${error.message}`);
       }
     },
   },
