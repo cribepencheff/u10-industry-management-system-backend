@@ -1,4 +1,4 @@
-export const typeDefs = /* GraphQL */`
+export const typeDefs = /* GraphQL */ `
   type Product {
     id: ID!
     name: String!
@@ -11,12 +11,6 @@ export const typeDefs = /* GraphQL */`
     createdAt: String
     updatedAt: String
   }
-
-  type TotalValueResult {
-    totalValue: Float!
-    message: String
-  }
-
   type ManufacturerTotalValue {
     manufacturer: String!
     totalValue: Float!
