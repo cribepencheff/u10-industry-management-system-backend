@@ -21,11 +21,6 @@ export const createProduct = async (req, res) => {
       return res.status(400).json({ error: "Manufacturer does not exist" });
     }
 
-    const existingProduct = await ProductModel.findOne({ sku });
-    if (existingProduct) {
-      return res.status(409).json({ error: `A product with SKU ${sku} already exists.` });
-    }
-
     const newProduct = await ProductModel.create({
       name,
       sku,
@@ -37,6 +32,10 @@ export const createProduct = async (req, res) => {
     });
     return res.status(201).json(newProduct);
   } catch (error) {
+    if (error.code === 11000) {
+      return res.status(409).json({ error: `A product with SKU ${sku} already exists.` });
+    }
+
     console.error("[products/]", error);
     res.status(500).json({ error: "Error creating product" });
   }
@@ -56,7 +55,7 @@ export const getProducts = async (req, res) => {
       }).lean();
 
     return res.status(200).json(products);
-  } catch (err) {
+  } catch (error) {
     console.error("[products/]", error);
     return res.status(500).json({ error: "Error fetching products" });
   }
@@ -86,7 +85,7 @@ export const getProduct = async (req, res) => {
     res.status(200).json(product);
   } catch (error) {
     console.error(`[products/${req.params.id}]`, error);
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: "Error fetching product" });
   }
 };
 
@@ -160,13 +159,14 @@ export const deleteProduct = async (req, res) => {
       message: "Product deleted successfully",
       product: existingProduct
     });
-  } catch (err) {
+  } catch (error) {
+    console.error(`[products/${req.params.id}]`, error);
     return res.status(500).json({ error: "Failed to delete product" } );
   }
 };
 
 // Total value of all products in stock
-export const getTotalValueOfAllProducts = async (req, res) => {
+export const totalStockValue = async (req, res) => {
   try {
     const result = await ProductModel.aggregate([
       {
@@ -186,12 +186,13 @@ export const getTotalValueOfAllProducts = async (req, res) => {
     res.status(200).json({ totalValue: Number(result[0]?.totalValue.toFixed(2)) });
 
   } catch (error) {
+    console.error("[products/total-stock-value]", error);
     res.status(500).json({ error: "Error calculating total value of products" });
   }
 };
 
 // Total value of products in stock by manufacturer
-export const getTotalValueByManufacturer = async (req, res) => {
+export const totalStockValueByManufacturer = async (req, res) => {
   try {
     const result = await ProductModel.aggregate([
       {
@@ -234,27 +235,27 @@ export const getTotalValueByManufacturer = async (req, res) => {
     res.status(200).json(formattedResult);
 
   } catch (error) {
+    console.error("[products/total-stock-value-by-manufacturer]", error);
     res.status(500).json({ error: "Error calculating total value by manufacturer" });
   }
 };
 
 // low stock products, fewer than 10 in stock
-export const getLowStockProducts = async (req, res) => {
+export const lowStockProducts = async (req, res) => {
   try {
     const products = await ProductModel.find({ amountInStock: { $lt: 10 } })
 
-    if(products.length === 0) {
-      return res.status(200).json({message: "No low stock products"});
-    }
+    if (!products.length) return res.status(200).json([]);
 
     res.status(200).json(products);
   } catch (error) {
+    console.error("[products/low-stock]", error);
     res.status(500).json({ error: "Error fetching low stock products" });
   }
 };
 
 // Get products with critical stock (less than 5 items), including manufacturer and contact details
-export const getProductsByCriticalStock = async (req, res) => {
+export const criticalStockProducts = async (req, res) => {
   try {
     const products = await ProductModel.find({ amountInStock: { $lt: 5 } })
       .select("name sku amountInStock manufacturer")
@@ -267,13 +268,11 @@ export const getProductsByCriticalStock = async (req, res) => {
         }
       });
 
-    if (!products.length) {
-      return res.status(200).json({ message: "No critical stock found" });
-    }
+    if (!products.length) return res.status(200).json([]);
 
     res.status(200).json(products);
   } catch (error) {
     console.error("[products/critical-stock]", error);
-    return res.status(500).json({ error: "Error fetching products with critical stock" });
+    return res.status(500).json({ error: "Error fetching critical stock products" });
   }
 }

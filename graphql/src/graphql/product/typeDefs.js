@@ -46,10 +46,10 @@ export const typeDefs = /* GraphQL */`
   type Query {
     products: [Product]
     product(id: ID!): Product
-    getTotalValueOfAllProducts: Float!
-    getTotalValueByManufacturer: [ManufacturerTotalValue!]
-    getLowStockProducts: [Product!]
-    getProductsByCriticalStock: [Product!]!
+    totalStockValue: Float!
+    totalStockValueByManufacturer: [ManufacturerTotalValue!]
+    lowStockProducts: [Product!]
+    criticalStockProducts: [Product!]!
   }
 
   type Mutation {

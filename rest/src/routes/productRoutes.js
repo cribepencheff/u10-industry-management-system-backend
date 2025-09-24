@@ -5,18 +5,18 @@ import {
   getProduct,
   updateProduct,
   deleteProduct,
-  getTotalValueOfAllProducts,
-  getTotalValueByManufacturer,
-  getLowStockProducts,
-  getProductsByCriticalStock
+  totalStockValue,
+  totalStockValueByManufacturer,
+  lowStockProducts,
+  criticalStockProducts
 } from "../controllers/productController.js";
 
 const router = express.Router();
 
-router.get("/total-stock-value", getTotalValueOfAllProducts);
-router.get("/total-stock-value-by-manufacturer", getTotalValueByManufacturer);
-router.get("/low-stock", getLowStockProducts);
-router.get("/critical-stock", getProductsByCriticalStock);
+router.get("/total-stock-value", totalStockValue);
+router.get("/total-stock-value-by-manufacturer", totalStockValueByManufacturer);
+router.get("/low-stock", lowStockProducts);
+router.get("/critical-stock", criticalStockProducts);
 
 router.post("/", createProduct);
 router.get("/", getProducts);

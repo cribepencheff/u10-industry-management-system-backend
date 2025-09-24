@@ -23,7 +23,7 @@ export const resolvers = {
         throw new Error(`Error fetching products: ${error.message}`);
       }
     },
-    getTotalValueOfAllProducts: async (_parent, args) => {
+    totalStockValue: async (_parent, args) => {
       try {
         const result = await ProductModel.aggregate([
           {
@@ -46,7 +46,7 @@ export const resolvers = {
         throw new Error(`Error calculating total value of products ${error.message}`);
       }
     },
-    getTotalValueByManufacturer: async (_parent, args) => {
+    totalStockValueByManufacturer: async (_parent, args) => {
       try {
         const result = await ProductModel.aggregate([
           {
@@ -95,7 +95,7 @@ export const resolvers = {
         );
       }
     },
-    getLowStockProducts: async (_parent, args) => {
+    lowStockProducts: async (_parent, args) => {
       try {
         const products = await ProductModel.find({ amountInStock: { $lt: 10 } })
           .populate({
@@ -108,7 +108,7 @@ export const resolvers = {
         throw new Error(`Error fetching low stock products ${error.message}`);
       }
     },
-    getProductsByCriticalStock: async (_parent, args) => {
+    criticalStockProducts: async (_parent, args) => {
       try {
         const products = await ProductModel.find({ amountInStock: { $lt: 5 } })
           .populate({
@@ -166,14 +166,14 @@ export const resolvers = {
     },
     updateProduct: async (_parent, { id, input }) => {
       const allowedFields = ["name", "sku", "description", "price", "category", "manufacturer", "amountInStock"];
-      const validInputs = {};
 
-      allowedFields.forEach(field => {
-        if (field in input) validInputs[field] = input[field];
-      });
+      const validInputs = allowedFields.reduce((acc, field) => {
+        if (field in input) acc[field] = input[field];
+        return acc;
+      }, {});
 
       if (!Object.keys(validInputs).length) {
-        return res.status(400).json({ error: `At least one of the following fields must be provided: ${allowedFields.join(", ")}` });
+        throw new Error(`At least one of the following fields must be provided: ${allowedFields.join(", ")}`);
       }
 
       if (!mongoose.isValidObjectId(id)) {
@@ -234,16 +234,21 @@ export const resolvers = {
     id: (doc) => String(doc._id),
 
     manufacturer: async (doc) => {
-      // For manufacturer: return full object if already populated, otherwise return just its id.
-      if (doc.manufacturer && typeof doc.manufacturer === "object" && doc.manufacturer._id) {
-        return doc.manufacturer;
-      }
-
-      return { id: String(doc.manufacturer) };
+      // Return full manufacturer object if previously populated, otherwise fetch it from DB.
+      if (!doc.manufacturer) return null;
+      if (typeof doc.manufacturer === "object" && doc.manufacturer.name) return doc.manufacturer;
+      return await ManufacturerModel.findById(doc.manufacturer);
     },
   },
 
   Manufacturer: {
     id: (doc) => String(doc._id),
+
+    contact: async (doc) => {
+    // Return full contact object if previously populated, otherwise fetch it from DB.
+      if (!doc.contact) return null;
+      if (typeof doc.contact === "object" && doc.contact.name) return doc.contact;
+      return await ContactModel.findById(doc.contact);
+    }
   },
 };
