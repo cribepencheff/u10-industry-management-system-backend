@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 import { faker } from "@faker-js/faker";
 import { ContactModel } from "../src/models/contact.js";
 import { ManufacturerModel } from "../src/models/manufacturer.js";
-import { ProductModel } from "../src/models/Product.js";
+import { ProductModel } from "../src/models/product.js";
 
 dotenv.config();
 

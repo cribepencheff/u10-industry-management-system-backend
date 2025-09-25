@@ -11,6 +11,7 @@ export const typeDefs = /* GraphQL */ `
     createdAt: String
     updatedAt: String
   }
+
   type ManufacturerTotalValue {
     manufacturer: String!
     totalValue: Float!
